@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	h2o "github.com/renatofagalde/app-header2object"
 	domainerror "github.com/renatofagalde/module-error"
 	"github.com/renatofagalde/module-error/httperror"
+	h2o "github.com/renatofagalde/module-header2object"
 )
 
 func InjectHeaders() gin.HandlerFunc {
