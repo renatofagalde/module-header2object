@@ -12,8 +12,6 @@ const (
 	ContextKeyUserID    = "h2o_user_id"
 )
 
-// RequestContext holds the tenant and user identifiers extracted from
-// HTTP headers after validation by the authorizer.
 type RequestContext struct {
 	CompanyID string
 	SiteID    string
