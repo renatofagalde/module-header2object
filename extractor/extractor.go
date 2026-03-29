@@ -1,38 +1,27 @@
 package extractor
 
 import (
+	"errors"
+
+	"github.com/gin-gonic/gin"
 	h2o "github.com/renatofagalde/app-header2object"
+	"github.com/renatofagalde/app-header2object/middleware"
 )
 
-// HeaderSetter is the constraint that any usecase input must implement
-// to receive tenant and user context injection.
-//
-// Implement this method on your input struct:
-//
-//	func (i *CreateMovementInput) SetRequestContext(ctx h2o.RequestContext) {
-//	    i.CompanyID = ctx.CompanyID
-//	    i.SiteID    = ctx.SiteID
-//	    i.UserID    = ctx.UserID
-//	}
 type HeaderSetter interface {
 	SetRequestContext(ctx h2o.RequestContext)
 }
 
-// Enrich injects the RequestContext into any input that implements HeaderSetter.
-// Returns the same pointer to allow inline use.
-//
-// Usage:
-//
-//	rCtx, ok := middleware.FromGinContext(c)
-//	if !ok { ... }
-//
-//	input := extractor.Enrich(&CreateMovementInput{
-//	    Amount: amount,
-//	    Nature: movement.NatureDebit,
-//	}, rCtx)
-//
-//	result, err := h.service.Create(c.Request.Context(), input)
-func Enrich[T HeaderSetter](input T, ctx h2o.RequestContext) T {
-	input.SetRequestContext(ctx)
-	return input
+func Bind[T HeaderSetter](c *gin.Context, target T) error {
+	if err := c.ShouldBindJSON(target); err != nil {
+		return err
+	}
+
+	rCtx, ok := middleware.FromGinContext(c)
+	if !ok {
+		return errors.New("missing tenant headers")
+	}
+
+	target.SetRequestContext(rCtx)
+	return nil
 }
