@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
-	h2o "github.com/renatofagalde/app-header2object"
-	"github.com/renatofagalde/app-header2object/middleware"
+	h2o "github.com/renatofagalde/module-header2object"
+	"github.com/renatofagalde/module-header2object/middleware"
 )
 
 type HeaderSetter interface {
