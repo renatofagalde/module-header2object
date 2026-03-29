@@ -1,1 +1,2 @@
 github.com/gin-gonic/gin v1.10.0/go.mod h1:4PMNQiOhvDRa013RKVbsiNwoyezlm2rm0uX/T7kzp5Y=
+github.com/renatofagalde/module-error v1.0.3/go.mod h1:Ny0o7rjaJ6P87tCovps3D4bw47sX5Qt9Y6Kz4KNnSXE=
