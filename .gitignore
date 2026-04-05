@@ -90,3 +90,5 @@ Thumbs.db
 ########################################
 *.log
 docker-data/
+
+setup.sh
