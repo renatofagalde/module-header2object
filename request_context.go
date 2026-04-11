@@ -8,10 +8,10 @@ const (
 )
 
 const (
-	ContextKeyCompanyID     = "h2o_company_id"
-	ContextKeySiteID        = "h2o_site_id"
-	ContextKeyUserID        = "h2o_user_id"
-	ContextKeyCorrelationID = "h2o_correlation_id"
+    ContextKeyCompanyID     = "company_id"
+    ContextKeySiteID        = "site_id"
+    ContextKeyUserID        = "user_id"
+    ContextKeyCorrelationID = "correlation_id"
 )
 
 type RequestContext struct {
