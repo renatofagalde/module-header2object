@@ -8,13 +8,27 @@ import (
 	h2o "github.com/renatofagalde/module-header2object"
 )
 
-func InjectHeaders() gin.HandlerFunc {
+// InjectHeaders extrai os headers do tenant e popula o gin.Context.
+//
+// Por padrão exige X-Company-ID, X-Site-ID e X-User-ID.
+// Use h2o.SkipSite() para tornar X-Site-ID opcional em rotas que
+// operam apenas por company (ex: /pes/*).
+//
+// Backward compatible: InjectHeaders() continua funcionando idêntico.
+func InjectHeaders(opts ...h2o.Option) gin.HandlerFunc {
+	cfg := h2o.ResolveOptions(opts...)
+
 	return func(c *gin.Context) {
 		companyID := c.GetHeader(h2o.HeaderCompanyID)
 		siteID := c.GetHeader(h2o.HeaderSiteID)
 		userID := c.GetHeader(h2o.HeaderUserID)
 
-		if companyID == "" || siteID == "" || userID == "" {
+		if companyID == "" || userID == "" {
+			httperror.WriteError(c, domainerror.ErrInvalidInput)
+			c.Abort()
+			return
+		}
+		if !cfg.SkipSite && siteID == "" {
 			httperror.WriteError(c, domainerror.ErrInvalidInput)
 			c.Abort()
 			return
@@ -35,7 +49,13 @@ func InjectHeaders() gin.HandlerFunc {
 	}
 }
 
-func FromGinContext(c *gin.Context) (h2o.RequestContext, bool) {
+// FromGinContext extrai o RequestContext do gin.Context.
+//
+// Por padrão exige que todos os campos estejam preenchidos.
+// Use h2o.SkipSite() para aceitar SiteID vazio.
+//
+// Backward compatible: FromGinContext(c) continua funcionando idêntico.
+func FromGinContext(c *gin.Context, opts ...h2o.Option) (h2o.RequestContext, bool) {
 	companyID, ok1 := c.Get(h2o.ContextKeyCompanyID)
 	siteID, ok2 := c.Get(h2o.ContextKeySiteID)
 	userID, ok3 := c.Get(h2o.ContextKeyUserID)
@@ -56,5 +76,5 @@ func FromGinContext(c *gin.Context) (h2o.RequestContext, bool) {
 		CorrelationID: correlationID,
 	}
 
-	return ctx, ctx.IsValid()
+	return ctx, ctx.IsValid(opts...)
 }
