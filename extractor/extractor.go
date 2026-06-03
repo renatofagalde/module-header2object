@@ -15,13 +15,17 @@ type HeaderSetter interface {
 }
 
 // Bind faz o bind do JSON e injeta o tenant context no DTO em uma única chamada.
-// Substitui c.ShouldBindJSON em todos os handlers de rotas protegidas.
-func Bind[T HeaderSetter](c *gin.Context, target T) error {
+//
+// Por padrão exige Company + Site + User. Use h2o.SkipSite() para rotas
+// que aceitam X-Site-ID vazio (ex: /pes/*).
+//
+// Backward compatible: Bind(c, &dto) continua funcionando idêntico.
+func Bind[T HeaderSetter](c *gin.Context, target T, opts ...h2o.Option) error {
 	if err := c.ShouldBindJSON(target); err != nil {
 		return err
 	}
 
-	rCtx, ok := middleware.FromGinContext(c)
+	rCtx, ok := middleware.FromGinContext(c, opts...)
 	if !ok {
 		return errors.New("missing tenant headers")
 	}
